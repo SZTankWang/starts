@@ -80,6 +80,9 @@ public class RTSUtil implements StartsConstants {
         LOGGER.log(Level.FINE, "JDEPS ARGS:" + args);
 
         StringWriter output = AgentLoader.loadAndRunJdeps(args);
+        //try out constant TEST_CLASSES
+        LOGGER.log(Level.INFO, "ZHENMING: TEST_CLASSES is "+TEST_CLASSES);
+
         // jdeps can return an empty output when run on .jar files with no .class files
         return output.getBuffer().length() != 0 ? getDepsFromJdepsOutput(output) : new HashMap<String, Set<String>>();
     }

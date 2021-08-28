@@ -54,7 +54,7 @@ public interface StartsConstants {
     String CLASSES = "classes";
     String JAVA_HOME = "java.home";
     String SF_CLASSPATH = "sf-classpath";
-    String TEST_CLASSES = "test-classes";
+    String TEST_CLASSES = "tests";
     String JAR_CHECKSUMS = "jar-checksums";
     String CHANGED_CLASSES = "changed-classes";
     String CHECK_IF_ALL_AFFECTED = "checkIfAllAffected";

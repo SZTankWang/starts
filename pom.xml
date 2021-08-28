@@ -237,6 +237,7 @@
           <failOnViolation>true</failOnViolation>
           <includeTestSourceDirectory>true</includeTestSourceDirectory>
           <linkXRef>false</linkXRef>
+          <skip>true</skip>
           <excludes>com/sun/**/*,org/apache/maven/**/*,edu/illinois/starts/asm/**/*</excludes>
         </configuration>
         <dependencies>

@@ -5,6 +5,7 @@
 package edu.illinois.starts.helpers;
 
 import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -232,11 +233,45 @@ public class Writer implements StartsConstants {
         Collections.sort(list);
         logger.log(Level.INFO, EMPTY);
         logger.log(Level.INFO, STARS + WHITE_SPACE + title + WHITE_SPACE + STARS);
+        
+        File test_selected = new File("/home/zhenming/research/test-selected.txt");
+        FileWriter fw = null;
+        BufferedWriter bw = null;
+        if(!test_selected.exists()){
+            logger.log(Level.WARNING,"selected-test.txt not exists!");
+        }
+        
+        else{
+            //create filewriter and bufferwriter
+            try{
+                fw = new FileWriter(test_selected,true);
+                bw = new BufferedWriter(fw);
 
-        for (String listItem : list) {
-            logger.log(Level.INFO, listItem);
+            }catch(IOException e){}
+
         }
 
+
+
+    
+        
+        for (String listItem : list) {
+
+            logger.log(Level.INFO, "haha: " + listItem);
+            // write tests to a file , the path to the log file:/home/zhenming/research/test-selected.txt
+            if(test_selected.exists() && fw != null && bw != null){
+                //write test classes
+                try{
+                    bw.write(listItem);
+                    bw.write("\n");                    
+                }catch(IOException e){}
+
+            }
+        }
+        try{
+            bw.close(); //close file
+        }catch(Exception e){}
+        
         if (set.isEmpty()) {
             logger.log(Level.INFO, title + " found no classes.");
         }

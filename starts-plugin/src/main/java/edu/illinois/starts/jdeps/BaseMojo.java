@@ -86,10 +86,16 @@ abstract class BaseMojo extends SurefirePlugin implements StartsConstants {
     @Parameter(defaultValue = "graph", readonly = true, required = true)
     protected String graphFile;
 
+    /*
+        where the generated test classes lie. Required
+    */
+    @Parameter(property = "testClassesDir", required = true, defaultValue="")
+    protected String testClassesDir;
     /**
      * Log levels as defined in java.util.logging.Level.
      */
     @Parameter(property = "startsLogging", defaultValue = "CONFIG")
+
     protected String loggingLevel;
     private Classpath sureFireClassPath;
 
@@ -133,7 +139,29 @@ abstract class BaseMojo extends SurefirePlugin implements StartsConstants {
     public List getTestClasses(String methodName) {
         long start = System.currentTimeMillis();
         DefaultScanResult defaultScanResult = null;
+        
+        //first set correct test classes path
+        try{
+            File fd = new File(testClassesDir);
+
+            Field sureFireTestDir = AbstractSurefireMojo.class.getDeclaredField("testClassesDirectory");
+            sureFireTestDir.setAccessible(true);
+            File check = (File)sureFireTestDir.get(this);
+            Logger.getGlobal().log(Level.INFO,"surefire test classes dir: "+check );
+
+            //set test classes path
+            sureFireTestDir.set(this,fd);
+            check = (File)sureFireTestDir.get(this);
+            Logger.getGlobal().log(Level.INFO,"surefire test classes dir after : "+check );
+
+        }catch (NoSuchFieldException nsme) {
+            nsme.printStackTrace();
+        }catch (IllegalAccessException iae) {
+            iae.printStackTrace();
+        }
+
         try {
+
             Method scanMethod = AbstractSurefireMojo.class.getDeclaredMethod("scanForTestClasses", null);
             scanMethod.setAccessible(true);
             defaultScanResult = (DefaultScanResult) scanMethod.invoke(this, null);
@@ -263,8 +291,12 @@ abstract class BaseMojo extends SurefirePlugin implements StartsConstants {
         return new Result(transitiveClosure, loadables.getGraph(), affected, loadables.getUnreached());
     }
 
-    protected List<String> getAllClasses() {
-        DirectoryScanner testScanner = new DirectoryScanner(getTestClassesDirectory(), new TestListResolver(STAR));
+    public List<String> getAllClasses() {
+        // DirectoryScanner testScanner = new DirectoryScanner(getTestClassesDirectory(), new TestListResolver(STAR));
+        Logger.getGlobal().log(Level.INFO, "testClassesDir : "+ testClassesDir);        
+        File fd = new File(testClassesDir);
+        DirectoryScanner testScanner = new DirectoryScanner(fd, new TestListResolver(STAR));
+
         DirectoryScanner classScanner = new DirectoryScanner(getClassesDirectory(), new TestListResolver(STAR));
         DefaultScanResult scanResult = classScanner.scan().append(testScanner.scan());
         return scanResult.getFiles();
