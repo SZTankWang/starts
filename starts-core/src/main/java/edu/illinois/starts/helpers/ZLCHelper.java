@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Iterator;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
@@ -157,6 +158,9 @@ public class ZLCHelper implements StartsConstants {
         File zlc = new File(artifactsDir, zlcFile);
         if (!zlc.exists()) {
             LOGGER.log(Level.FINEST, NOEXISTING_ZLCFILE_FIRST_RUN);
+            //WRITE ALL CLASSES into external file
+            
+            
             return null;
         }
         Set<String> changedClasses = new HashSet<>();
@@ -228,6 +232,14 @@ public class ZLCHelper implements StartsConstants {
             // there was some change so we need to add all tests that reach star, if any
             affected.addAll(starTests);
         }
+
+        //print out all the changed classes
+        Iterator<String> it = changedClasses.iterator();
+        LOGGER.log(Level.INFO,"showing all the changed classes");
+        while(it.hasNext()){
+            LOGGER.log(Level.INFO,it.next());
+        }
+
         nonAffected.removeAll(affected);
         long end = System.currentTimeMillis();
         LOGGER.log(Level.FINEST, TIME_COMPUTING_NON_AFFECTED + (end - start) + MILLISECOND);

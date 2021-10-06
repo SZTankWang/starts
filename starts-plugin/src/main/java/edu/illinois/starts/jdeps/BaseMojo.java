@@ -73,6 +73,10 @@ abstract class BaseMojo extends SurefirePlugin implements StartsConstants {
     @Parameter(property = "gCache", defaultValue = "${basedir}${file.separator}jdeps-cache")
     protected String graphCache;
 
+    @Parameter(property = "testClassesDir", defaultValue = "")
+    protected String testClassesDir;
+
+
     /**
      * Set this to "false" to not print the graph obtained from jdeps parsing.
      * When "true" the graph is written to file after the run.
@@ -86,6 +90,8 @@ abstract class BaseMojo extends SurefirePlugin implements StartsConstants {
     @Parameter(defaultValue = "graph", readonly = true, required = true)
     protected String graphFile;
 
+
+    
     /**
      * Log levels as defined in java.util.logging.Level.
      */
@@ -130,7 +136,25 @@ abstract class BaseMojo extends SurefirePlugin implements StartsConstants {
                 + Writer.millsToSeconds(end - start));
     }
 
+    public void setSureFireTestDir(String dirName){
+        //modify surefire field using reflection
+        try{
+            File file = new File(dirName);
+            Field tcd = AbstractSurefireMojo.class.getDeclaredField("testClassesDirectory");
+            tcd.setAccessible(true);
+            tcd.set(this,file);
+
+        } catch (NoSuchFieldException x) {
+        x.printStackTrace();
+        } catch (IllegalAccessException x) {
+        x.printStackTrace();
+    }
+
+    }
+
     public List getTestClasses(String methodName) {
+        setSureFireTestDir(testClassesDir);
+
         long start = System.currentTimeMillis();
         DefaultScanResult defaultScanResult = null;
         try {
@@ -199,7 +223,10 @@ abstract class BaseMojo extends SurefirePlugin implements StartsConstants {
         long start = System.currentTimeMillis();
         if (sureFireClassPath == null) {
             try {
-                sureFireClassPath = new Classpath(getProject().getTestClasspathElements());
+                List classpath = getProject().getTestClasspathElements();
+                classpath.add(testClassesDir);
+
+                sureFireClassPath = new Classpath(classpath);
             } catch (DependencyResolutionRequiredException drre) {
                 drre.printStackTrace();
             }

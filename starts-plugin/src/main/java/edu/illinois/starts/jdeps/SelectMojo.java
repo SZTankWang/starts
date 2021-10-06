@@ -4,10 +4,12 @@
 
 package edu.illinois.starts.jdeps;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
-
+import org.apache.commons.io.FileUtils;
 import edu.illinois.starts.constants.StartsConstants;
 import edu.illinois.starts.helpers.Writer;
 import edu.illinois.starts.util.Logger;
@@ -42,6 +44,10 @@ public class SelectMojo extends DiffMojo implements StartsConstants {
         Set<String> affectedTests = computeAffectedTests();
         printResult(affectedTests, "AffectedTests");
         long end = System.currentTimeMillis();
+        
+        //output affected test to external file 
+        writeAffected(affectedTests);
+
         logger.log(Level.FINE, PROFILE_RUN_MOJO_TOTAL + Writer.millsToSeconds(end - start));
         logger.log(Level.FINE, PROFILE_TEST_RUNNING_TIME + 0.0);
     }
@@ -59,10 +65,22 @@ public class SelectMojo extends DiffMojo implements StartsConstants {
         }
         long startUpdate = System.currentTimeMillis();
         if (updateSelectChecksums) {
+            logger.log(Level.INFO, "size of non affected tests: "+nonAffectedTests.size());
             updateForNextRun(nonAffectedTests);
         }
         long endUpdate = System.currentTimeMillis();
         logger.log(Level.FINE, PROFILE_STARTS_MOJO_UPDATE_TIME + Writer.millsToSeconds(endUpdate - startUpdate));
+
         return affectedTests;
+    }
+
+    private void writeAffected(Set<String> arg) throws MojoExecutionException{
+        File file = new File("/home/zhenming/research/test-selected.txt");
+        try{
+            FileUtils.writeLines(file, arg, false);    
+        }catch(IOException e){
+            logger.log(Level.INFO, "IO EXCEPTION!");
+        }
+        
     }
 }
