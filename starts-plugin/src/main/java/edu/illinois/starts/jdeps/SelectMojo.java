@@ -44,7 +44,7 @@ public class SelectMojo extends DiffMojo implements StartsConstants {
         Set<String> affectedTests = computeAffectedTests();
         printResult(affectedTests, "AffectedTests");
         long end = System.currentTimeMillis();
-        
+        System.out.println("windows output");
         //output affected test to external file 
         writeAffected(affectedTests);
 
