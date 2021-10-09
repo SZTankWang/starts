@@ -236,8 +236,10 @@ public class ZLCHelper implements StartsConstants {
         //print out all the changed classes
         Iterator<String> it = changedClasses.iterator();
         LOGGER.log(Level.INFO,"showing all the changed classes");
+        pathParser p = new pathParser();
         while(it.hasNext()){
-            LOGGER.log(Level.INFO,it.next());
+            String className = p.doSlice(it.next());
+            LOGGER.log(Level.INFO,className);
         }
 
         nonAffected.removeAll(affected);
